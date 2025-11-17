@@ -6,21 +6,31 @@ namespace AvaloniaChessApp.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private ObservableCollection<ChessSquareViewModel> _squares;
+    private ObservableCollection<Base> _pieces;
     private string _status;
 
     public MainWindowViewModel()
     {
-        _squares = new ObservableCollection<ChessSquareViewModel>();
+        _pieces = new ObservableCollection<Base>();
         _status = "Game Ready";
 
         InitializeBoard();
     }
 
-    public ObservableCollection<ChessSquareViewModel> Squares
+    public ObservableCollection<Base> Pieces
     {
-        get => _squares;
-        set => this.RaiseAndSetIfChanged(ref _squares, value);
+        get => _pieces;
+        set => this.RaiseAndSetIfChanged(ref _pieces, value);
+    }
+
+    public Base GetPieceAtPosition(int row, int column)
+    {
+        foreach (Base piece in _pieces)
+        {
+            if (piece.Position.Row == row && piece.Position.Column == column)
+                return piece;
+        }
+        return null;
     }
 
     public string Status
@@ -31,55 +41,22 @@ public class MainWindowViewModel : ViewModelBase
 
     private void InitializeBoard()
     {
-        // Create 8x8 chess board
-        for (int row = 0; row < 8; row++)
-        {
-            for (int col = 0; col < 8; col++)
-            {
-                var isLightSquare = (row + col) % 2 == 0;
-                var squareColor = isLightSquare ? "LightGray" : "DarkGray";
-                var piece = GetInitialPiece(row, col);
-
-                _squares.Add(new ChessSquareViewModel
-                {
-                    Row = row,
-                    Column = col,
-                    SquareColor = squareColor,
-                    Piece = piece
-                });
-            }
-        }
+        InitializeTeam(Team.Black, pawnRow: 1, majorRow: 0);
+        InitializeTeam(Team.White, pawnRow: 6, majorRow: 7);
     }
 
-    private Base? GetInitialPiece(int row, int col)
+    private void InitializeTeam(Team team, int pawnRow, int majorRow)
     {
-        // Setup chess pieces in their starting positions
-        return (row, col) switch
-        {
-            // Black pieces (top)
-            (0, 0) or (0, 7) => new Rook(Team.Black),    // Black Rook
-            (0, 1) or (0, 6) => new Knight(Team.Black),  // Black Knight
-            (0, 2) or (0, 5) => new Bishop(Team.Black),  // Black Bishop
-            (0, 3) => new Queen(Team.Black),             // Black Queen
-            (0, 4) => new King(Team.Black),              // Black King
-            (1, _) => new Pawn(Team.Black),              // Black Pawn
+        _pieces.Add(new Rook(new Position(majorRow, 0), team));
+        _pieces.Add(new Knight(new Position(majorRow, 1), team));
+        _pieces.Add(new Bishop(new Position(majorRow, 2), team));
+        _pieces.Add(new Queen(new Position(majorRow, 3), team));
+        _pieces.Add(new King(new Position(majorRow, 4), team));
+        _pieces.Add(new Bishop(new Position(majorRow, 5), team));
+        _pieces.Add(new Knight(new Position(majorRow, 6), team));
+        _pieces.Add(new Rook(new Position(majorRow, 7), team));
 
-            (7, 0) or (7, 7) => new Rook(Team.White),    // Rook
-            (7, 1) or (7, 6) => new Knight(Team.White),  // Knight
-            (7, 2) or (7, 5) => new Bishop(Team.White),  // Bishop
-            (7, 3) => new Queen(Team.White),             // Queen
-            (7, 4) => new King(Team.White),              // King
-            (6, _) => new Pawn(Team.White),              // Pawn
-
-            _ => null                       // Empty square
-        };
+        for (int col = 0; col < 8; col++)
+            _pieces.Add(new Pawn(new Position(pawnRow, col), team));
     }
-}
-
-public class ChessSquareViewModel
-{
-    public int Row { get; set; }
-    public int Column { get; set; }
-    public string SquareColor { get; set; } = "White";
-    public Base? Piece { get; set; } = null;
 }

@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using AvaloniaChessApp.ViewModels;
+using AvaloniaChessApp.Pieces;
 
 namespace AvaloniaChessApp.Views;
 
@@ -27,10 +28,10 @@ public partial class MainWindow : Window
         {
             for (int col = 0; col < BoardSize; col++)
             {
-                var square = viewModel.Squares[row * BoardSize + col];
+                Base piece = viewModel.GetPieceAtPosition(row, col);
 
                 // Draw square background
-                var brush = square.SquareColor == "LightGray"
+                var brush = (row + col) % 2 == 0
                     ? new SolidColorBrush(Colors.LightGray)
                     : new SolidColorBrush(Colors.DarkGray);
 
@@ -48,11 +49,11 @@ public partial class MainWindow : Window
                 canvas.Children.Add(rect);
 
                 // Draw piece if exists
-                if (square.Piece != null)
+                if (piece != null)
                 {
                     var text = new TextBlock
                     {
-                        Text = square.Piece.Icon,
+                        Text = piece.Icon,
                         FontSize = 40,
                         TextAlignment = Avalonia.Media.TextAlignment.Center,
                         Foreground = new SolidColorBrush(Colors.Black)

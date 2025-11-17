@@ -2,7 +2,7 @@ namespace AvaloniaChessApp.Pieces;
 
 class Pawn : Base
 {
-    public Pawn(Team team) : base(team)
+    public Pawn(Position position, Team team) : base(position, team)
     {
         Name = "Pawn";
         Icon = "♟";
