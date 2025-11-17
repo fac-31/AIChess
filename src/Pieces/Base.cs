@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace AvaloniaChessApp.Pieces;
 
 public enum Team
@@ -18,6 +20,8 @@ public abstract class Base(Position position, Team team)
     public string? Icon { get; protected set; }
     public Position Position { get; } = position;
     public Team Team { get; } = team;
+
+    public abstract List<Position> GetPossibleMoves();
 
     public override string ToString()
     {

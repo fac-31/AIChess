@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using ReactiveUI;
 using AvaloniaChessApp.Pieces;
+using AvaloniaChessApp;
 
 namespace AvaloniaChessApp.ViewModels;
 
@@ -56,7 +57,7 @@ public class MainWindowViewModel : ViewModelBase
         _pieces.Add(new Knight(new Position(majorRow, 6), team));
         _pieces.Add(new Rook(new Position(majorRow, 7), team));
 
-        for (int col = 0; col < 8; col++)
+        for (int col = 0; col < App.BoardSize; col++)
             _pieces.Add(new Pawn(new Position(pawnRow, col), team));
     }
 }

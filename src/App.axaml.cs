@@ -6,6 +6,8 @@ namespace AvaloniaChessApp;
 
 public partial class App : Application
 {
+    public const int BoardSize = 8;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
