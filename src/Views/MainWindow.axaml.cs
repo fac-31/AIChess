@@ -48,11 +48,11 @@ public partial class MainWindow : Window
                 canvas.Children.Add(rect);
 
                 // Draw piece if exists
-                if (!string.IsNullOrEmpty(square.Piece))
+                if (square.Piece != null)
                 {
                     var text = new TextBlock
                     {
-                        Text = square.Piece,
+                        Text = square.Piece.Icon,
                         FontSize = 40,
                         TextAlignment = Avalonia.Media.TextAlignment.Center,
                         Foreground = new SolidColorBrush(Colors.Black)
