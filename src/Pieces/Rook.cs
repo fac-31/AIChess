@@ -8,7 +8,8 @@ class Rook : Base
     public Rook(Position position, Team team) : base(position, team)
     {
         Name = "Rook";
-        Icon = "♜";
+        IconBlack = "♜";
+        IconWhite = "♖";
     }
 
     public override List<Position> GetPossibleMoves()

@@ -7,7 +7,8 @@ public class King : Base
     public King(Position position, Team team) : base(position, team)
     {
         Name = "King";
-        Icon = "♚";
+        IconBlack = "♚";
+        IconWhite = "♔";
     }
 
     public override List<Position> GetPossibleMoves()

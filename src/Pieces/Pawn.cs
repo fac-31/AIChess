@@ -7,7 +7,8 @@ class Pawn : Base
     public Pawn(Position position, Team team) : base(position, team)
     {
         Name = "Pawn";
-        Icon = "♟";
+        IconBlack = "♟";
+        IconWhite = "♙";
     }
 
     public override List<Position> GetPossibleMoves()

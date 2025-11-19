@@ -99,8 +99,9 @@ public partial class MainWindow : Window
                 {
                     var text = new TextBlock
                     {
-                        Text = piece.Icon,
+                        Text = piece.Icon(),
                         FontSize = 40,
+                        FontFamily = "Courier New",
                         TextAlignment = Avalonia.Media.TextAlignment.Center,
                         Foreground = new SolidColorBrush(Colors.Black),
                         IsHitTestVisible = false // Prevent hover/click

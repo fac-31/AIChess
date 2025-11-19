@@ -8,7 +8,8 @@ class Queen : Base
     public Queen(Position position, Team team) : base(position, team)
     {
         Name = "Queen";
-        Icon = "♛";
+        IconBlack = "♛";
+        IconWhite = "♕";
     }
 
     public override List<Position> GetPossibleMoves()

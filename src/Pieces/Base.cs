@@ -18,13 +18,19 @@ public class Position(int row, int column)
 public abstract class Base(Position position, Team team)
 {
     public string? Name { get; protected set; }
-    public string? Icon { get; protected set; }
+    public string? IconBlack { get; protected set; }
+    public string? IconWhite { get; protected set; }
     public Position Position { get; set; } = position;
     public Team Team { get; } = team;
 
     public TextBlock TextBlock { get; set; } = null;
 
     public abstract List<Position> GetPossibleMoves();
+
+    public string Icon()
+    {
+        return Team == Team.White ? IconWhite! : IconBlack!;
+    }
 
     public override string ToString()
     {
