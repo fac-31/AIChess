@@ -60,4 +60,9 @@ public class MainWindowViewModel : ViewModelBase
         for (int col = 0; col < App.BoardSize; col++)
             _pieces.Add(new Pawn(new Position(pawnRow, col), team));
     }
+
+    public void RemovePiece(Base piece)
+    {
+        _pieces.Remove(piece);
+    }
 }

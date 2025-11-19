@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Avalonia.Controls;
 
 namespace AvaloniaChessApp.Pieces;
 
@@ -18,8 +19,10 @@ public abstract class Base(Position position, Team team)
 {
     public string? Name { get; protected set; }
     public string? Icon { get; protected set; }
-    public Position Position { get; } = position;
+    public Position Position { get; set; } = position;
     public Team Team { get; } = team;
+
+    public TextBlock TextBlock { get; set; } = null;
 
     public abstract List<Position> GetPossibleMoves();
 

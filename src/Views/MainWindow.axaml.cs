@@ -8,18 +8,22 @@ using AvaloniaChessApp;
 using System;
 using System.Collections.Generic;
 
+using AvaloniaChessApp.ViewModels;
+
 namespace AvaloniaChessApp.Views;
 
 public partial class MainWindow : Window
 {
     private const int SquareSize = 50;
+
+    private MainWindowViewModel viewModel = null;
     private List<Rectangle> squares = new List<Rectangle>();
     private Rectangle? selectedSquare;
 
     public MainWindow()
     {
         InitializeComponent();
-        var viewModel = new MainWindowViewModel();
+        viewModel = new MainWindowViewModel();
         DataContext = viewModel;
         DrawChessBoard(viewModel);
     }
@@ -35,6 +39,15 @@ public partial class MainWindow : Window
             return piece.Position;
         }
         return null;
+    }
+
+    private Base GetPieceFromRectangle(Rectangle rect)
+    {
+        if (rect.Tag is Base piece)
+        {
+            return piece;
+        }
+        return null!;
     }
 
     private Rectangle GetRectangleAtPosition(Position position)
@@ -93,14 +106,22 @@ public partial class MainWindow : Window
                         IsHitTestVisible = false // Prevent hover/click
                     };
 
-                    Canvas.SetLeft(text, col * SquareSize + 5);
-                    Canvas.SetTop(text, row * SquareSize + 5);
                     canvas.Children.Add(text);
+
+                    piece.TextBlock = text;
+                    DrawIcon(piece);
                 }
             }
         }
 
         ResetSquareColors();
+    }
+
+    private void DrawIcon(Base piece)
+    {
+        // Implementation for drawing the icon of the piece
+        Canvas.SetLeft(piece.TextBlock, piece.Position.Column * SquareSize + 5);
+        Canvas.SetTop(piece.TextBlock, piece.Position.Row * SquareSize + 5);
     }
 
     private void ResetSquareColors()
@@ -113,27 +134,17 @@ public partial class MainWindow : Window
                 ? new SolidColorBrush(Colors.LightGray)
                 : new SolidColorBrush(Colors.DarkGray);
         }
+
+        HighlightSelectedSquare();
     }
 
-    private void OnSquareHoverEnter(Rectangle rect)
+    private void HighlightSelectedSquare()
     {
-        // Only show hover effect if not selected
-        if (rect != selectedSquare)
-        {
-            rect.Fill = new SolidColorBrush(Colors.Yellow);
-        }
-    }
+        Rectangle rect = selectedSquare;
+        if (rect == null)
+            return;
 
-    private void OnSquareHoverExit(Rectangle rect)
-    {
-        // Restore original color on hover exit
-        ResetSquareColors();
-    }
-
-    private void OnSquareClick(Rectangle rect)
-    {
-        // Deselect previous square
-        ResetSquareColors();
+        rect.Fill = new SolidColorBrush(Colors.Green);
 
         // Select new square
         selectedSquare = rect;
@@ -157,5 +168,61 @@ public partial class MainWindow : Window
                 }
             }
         }
+    }
+
+    private void OnSquareHoverEnter(Rectangle rect)
+    {
+        // Only show hover effect if not selected
+        if (rect != selectedSquare)
+        {
+            rect.Fill = new SolidColorBrush(Colors.Yellow);
+        }
+    }
+
+    private void OnSquareHoverExit(Rectangle rect)
+    {
+        // Restore original color on hover exit
+        ResetSquareColors();
+    }
+
+    private void OnSquareClick(Rectangle rect)
+    {
+        if (selectedSquare != null)
+        {
+            Position clickedPos = GetPositionFromRectangle(rect);
+            Base piece = GetPieceFromRectangle(selectedSquare);
+            List<Position> moves = piece.GetPossibleMoves();
+            foreach (Position move in moves)
+            {
+                if (clickedPos.Row == move.Row && clickedPos.Column == move.Column)
+                {
+                    // Delete whatever piece is at the clicked position
+                    Base targetPiece = GetPieceFromRectangle(rect);
+                    if (targetPiece != null)
+                    {
+                        var canvas = this.FindControl<Canvas>("ChessBoard");
+                        canvas.Children.Remove(targetPiece.TextBlock);
+                        viewModel.RemovePiece(targetPiece);
+                    }
+
+                    // Move piece
+                    selectedSquare.Tag = piece.Position;
+                    rect.Tag = piece;
+                    piece.Position = clickedPos;
+
+                    selectedSquare = null;
+                    DrawIcon(piece);
+                    ResetSquareColors();
+                    return;
+                }
+            }
+        }
+
+        if (GetPieceFromRectangle(rect) != null)
+            selectedSquare = rect;
+        else
+            selectedSquare = null;
+
+        ResetSquareColors();
     }
 }
