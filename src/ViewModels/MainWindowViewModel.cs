@@ -2,20 +2,32 @@ using System.Collections.ObjectModel;
 using ReactiveUI;
 using AvaloniaChessApp.Pieces;
 using AvaloniaChessApp;
+using AvaloniaChessApp.Views;
+using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
+using Agent;
+using System.Threading.Tasks;
+using System;
+using DotNetEnv;
 
 namespace AvaloniaChessApp.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    private MainWindow _window;
+    private ChessAgent _agent;
     private ObservableCollection<Base> _pieces;
     private string _status;
     private Team _currentTurn;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(MainWindow window)
     {
+        _window = window;
         _pieces = new ObservableCollection<Base>();
         _status = "White's Turn";
         _currentTurn = Team.White;
+
+        _agent = new ChessAgent(this, Env.GetString("OPENAI_KEY"), Env.GetString("OPENAI_MODEL"));
 
         InitializeBoard();
     }
@@ -24,6 +36,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _pieces;
         set => this.RaiseAndSetIfChanged(ref _pieces, value);
+    }
+
+    public Base GetPieceAtPosition(Position pos)
+    {
+        return GetPieceAtPosition(pos.Row, pos.Column);
     }
 
     public Base GetPieceAtPosition(int row, int column)
@@ -67,6 +84,63 @@ public class MainWindowViewModel : ViewModelBase
 
         for (int col = 0; col < App.BoardSize; col++)
             _pieces.Add(new Pawn(new Position(pawnRow, col), team));
+    }
+
+    public void MovePiece(Base piece, Position newPosition)
+    {
+        // Delete whatever piece is at the clicked position
+        Base targetPiece = GetPieceAtPosition(newPosition);
+        if (targetPiece != null)
+        {
+            var canvas = _window.FindControl<Canvas>("ChessBoard");
+            canvas.Children.Remove(targetPiece.TextBlock);
+            RemovePiece(targetPiece);
+        }
+
+        Rectangle oldRect = _window.GetRectangleAtPosition(piece.Position);
+        Rectangle newRect = _window.GetRectangleAtPosition(newPosition);
+
+        // Move piece
+        oldRect.Tag = piece.Position;
+        newRect.Tag = piece;
+        piece.Position = newPosition;
+
+        // Update turn
+        CurrentTurn = CurrentTurn == Team.White ? Team.Black : Team.White;
+        Status = CurrentTurn == Team.White ? "White's Turn" : "Black's Turn";
+
+        _window.ClearSelectedSquare();
+        _window.DrawIcon(piece);
+        _window.ResetSquareColors();
+
+        if (CurrentTurn == Team.Black)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    ResponseMove move = await _agent.DoNextMoveAsync();
+                    if (move != null)
+                    {
+                        Base agentPiece = GetPieceAtPosition(move.OldPosition);
+                        if (agentPiece != null)
+                        {
+                            // Move the piece on the UI thread
+                            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                MovePiece(agentPiece, move.NewPosition);
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error
+                    Console.WriteLine("Error during agent move:");
+                    Console.WriteLine(ex.Message);
+                }
+            });
+        }
     }
 
     public void RemovePiece(Base piece)

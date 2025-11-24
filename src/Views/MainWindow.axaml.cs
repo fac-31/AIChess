@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 
 using AvaloniaChessApp.ViewModels;
+using Agent;
+using System.Threading.Tasks;
 
 namespace AvaloniaChessApp.Views;
 
@@ -23,12 +25,12 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        viewModel = new MainWindowViewModel();
+        viewModel = new MainWindowViewModel(this);
         DataContext = viewModel;
         DrawChessBoard(viewModel);
     }
 
-    private Position? GetPositionFromRectangle(Rectangle rect)
+    static public Position? GetPositionFromRectangle(Rectangle rect)
     {
         if (rect.Tag is Position pos)
         {
@@ -50,7 +52,7 @@ public partial class MainWindow : Window
         return null!;
     }
 
-    private Rectangle GetRectangleAtPosition(Position position)
+    public Rectangle GetRectangleAtPosition(Position position)
     {
         foreach (var rect in squares)
         {
@@ -118,14 +120,14 @@ public partial class MainWindow : Window
         ResetSquareColors();
     }
 
-    private void DrawIcon(Base piece)
+    public void DrawIcon(Base piece)
     {
         // Implementation for drawing the icon of the piece
         Canvas.SetLeft(piece.TextBlock, piece.Position.Column * SquareSize + 5);
         Canvas.SetTop(piece.TextBlock, piece.Position.Row * SquareSize + 5);
     }
 
-    private void ResetSquareColors()
+    public void ResetSquareColors()
     {
         foreach (var rect in squares)
         {
@@ -171,6 +173,11 @@ public partial class MainWindow : Window
         }
     }
 
+    public void ClearSelectedSquare()
+    {
+        selectedSquare = null;
+    }
+
     private void OnSquareHoverEnter(Rectangle rect)
     {
         // Only show hover effect if not selected
@@ -197,27 +204,7 @@ public partial class MainWindow : Window
             {
                 if (clickedPos.Row == move.Row && clickedPos.Column == move.Column)
                 {
-                    // Delete whatever piece is at the clicked position
-                    Base targetPiece = GetPieceFromRectangle(rect);
-                    if (targetPiece != null)
-                    {
-                        var canvas = this.FindControl<Canvas>("ChessBoard");
-                        canvas.Children.Remove(targetPiece.TextBlock);
-                        viewModel.RemovePiece(targetPiece);
-                    }
-
-                    // Move piece
-                    selectedSquare.Tag = piece.Position;
-                    rect.Tag = piece;
-                    piece.Position = clickedPos;
-
-                    // Update turn
-                    viewModel.CurrentTurn = viewModel.CurrentTurn == Team.White ? Team.Black : Team.White;
-                    viewModel.Status = viewModel.CurrentTurn == Team.White ? "White's Turn" : "Black's Turn";
-
-                    selectedSquare = null;
-                    DrawIcon(piece);
-                    ResetSquareColors();
+                    viewModel.MovePiece(piece, clickedPos);
                     return;
                 }
             }
