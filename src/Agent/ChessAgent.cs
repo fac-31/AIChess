@@ -16,7 +16,6 @@ namespace Agent
     {
         public Position? OldPosition { get; set; }
         public Position? NewPosition { get; set; }
-        public string? Explanation { get; set; }
     }
 
     public class ChessAgent
@@ -52,7 +51,6 @@ Always respond with the following JSON format:
     ""row"": new position from left to right (0-7),
     ""column"": new position from top to bottom (0-7)
   },
-  ""explanation"": ""textual explanation of the move""
 }}
 
 ");
@@ -71,8 +69,6 @@ Always respond with the following JSON format:
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                 );
 
-                Console.WriteLine($"Recommended Move: From ({result?.OldPosition?.Row}, {result?.OldPosition?.Column}) to ({result?.NewPosition?.Row}, {result?.NewPosition?.Column})");
-                Console.WriteLine($"Explanation: {result?.Explanation}");
                 return result;
             }
             catch
