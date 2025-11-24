@@ -11,7 +11,7 @@ public partial class MainWindow : Window
 {
     private const int SquareSize = 50;
 
-    private MainWindowViewModel viewModel = null;
+    static public MainWindowViewModel viewModel = null;
     private List<Rectangle> squares = new List<Rectangle>();
     private Rectangle? selectedSquare;
 

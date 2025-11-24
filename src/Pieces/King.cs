@@ -26,10 +26,8 @@ public class King : Base
                 int newRow = Position.Row + rowOffset;
                 int newCol = Position.Column + colOffset;
 
-                if (newRow >= 0 && newRow < App.BoardSize && newCol >= 0 && newCol < App.BoardSize)
-                {
+                if (CanMoveTo(newRow, newCol) != CanMove.No)
                     possibleMoves.Add(new Position(newRow, newCol));
-                }
             }
         }
 

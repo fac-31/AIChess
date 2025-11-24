@@ -26,10 +26,8 @@ class Knight : Base
             int newRow = Position.Row + moveOffsets[i, 0];
             int newCol = Position.Column + moveOffsets[i, 1];
 
-            if (newRow >= 0 && newRow < App.BoardSize && newCol >= 0 && newCol < App.BoardSize)
-            {
+            if (CanMoveTo(newRow, newCol) != CanMove.No)
                 possibleMoves.Add(new Position(newRow, newCol));
-            }
         }
 
         return possibleMoves;

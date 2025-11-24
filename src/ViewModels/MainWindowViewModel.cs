@@ -89,6 +89,7 @@ public class MainWindowViewModel : ViewModelBase
     public void MovePiece(Base piece, Position newPosition)
     {
         // Delete whatever piece is at the clicked position
+        Position oldPosition = piece.Position;
         Base targetPiece = GetPieceAtPosition(newPosition);
         if (targetPiece != null)
         {
@@ -97,13 +98,14 @@ public class MainWindowViewModel : ViewModelBase
             RemovePiece(targetPiece);
         }
 
-        Rectangle oldRect = _window.GetRectangleAtPosition(piece.Position);
+        Rectangle oldRect = _window.GetRectangleAtPosition(oldPosition);
         Rectangle newRect = _window.GetRectangleAtPosition(newPosition);
 
         // Move piece
-        oldRect.Tag = piece.Position;
+        oldRect.Tag = oldPosition;
         newRect.Tag = piece;
         piece.Position = newPosition;
+        piece.OnMove(oldPosition, newPosition);
 
         // Update turn
         CurrentTurn = CurrentTurn == Team.White ? Team.Black : Team.White;
@@ -130,6 +132,12 @@ public class MainWindowViewModel : ViewModelBase
                             {
                                 MovePiece(agentPiece, move.NewPosition);
                             });
+                        }
+                        else
+                        {
+                            Console.WriteLine("No piece found at agent's specified old position.");
+                            CurrentTurn = CurrentTurn == Team.White ? Team.Black : Team.White;
+                            Status = CurrentTurn == Team.White ? "White's Turn" : "Black's Turn";
                         }
                     }
                 }

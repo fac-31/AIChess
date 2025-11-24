@@ -1,6 +1,7 @@
 namespace AvaloniaChessApp.Pieces;
 
 using System.Collections.Generic;
+using AvaloniaChessApp.Views;
 
 class Bishop : Base
 {
@@ -16,21 +17,10 @@ class Bishop : Base
         List<Position> possibleMoves = new List<Position>();
 
         // Diagonal moves
-        for (int i = 1; i < App.BoardSize; i++)
-        {
-            // Top-right diagonal
-            if (Position.Row + i < App.BoardSize && Position.Column + i < App.BoardSize)
-                possibleMoves.Add(new Position(Position.Row + i, Position.Column + i));
-            // Top-left diagonal
-            if (Position.Row + i < App.BoardSize && Position.Column - i >= 0)
-                possibleMoves.Add(new Position(Position.Row + i, Position.Column - i));
-            // Bottom-right diagonal
-            if (Position.Row - i >= 0 && Position.Column + i < App.BoardSize)
-                possibleMoves.Add(new Position(Position.Row - i, Position.Column + i));
-            // Bottom-left diagonal
-            if (Position.Row - i >= 0 && Position.Column - i >= 0)
-                possibleMoves.Add(new Position(Position.Row - i, Position.Column - i));
-        }
+        CollectMoves(1, 1, possibleMoves);   // Top-right
+        CollectMoves(1, -1, possibleMoves);  // Top-left
+        CollectMoves(-1, 1, possibleMoves);  // Bottom-right
+        CollectMoves(-1, -1, possibleMoves); // Bottom-left
 
         return possibleMoves;
     }

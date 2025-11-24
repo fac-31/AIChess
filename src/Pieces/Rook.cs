@@ -16,14 +16,10 @@ class Rook : Base
     {
         List<Position> possibleMoves = new List<Position>();
 
-        // Horizontal and vertical moves
-        for (int i = 0; i < App.BoardSize; i++)
-        {
-            if (i != Position.Column)
-                possibleMoves.Add(new Position(Position.Row, i)); // Horizontal moves
-            if (i != Position.Row)
-                possibleMoves.Add(new Position(i, Position.Column)); // Vertical moves
-        }
+        CollectMoves(1, 0, possibleMoves);   // Up
+        CollectMoves(-1, 0, possibleMoves);  // Down
+        CollectMoves(0, 1, possibleMoves);   // Right
+        CollectMoves(0, -1, possibleMoves);  // Left
 
         return possibleMoves;
     }
