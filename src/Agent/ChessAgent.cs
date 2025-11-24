@@ -44,12 +44,12 @@ You analyze chess positions represented as an 8x8 grid and make moves, dot indic
 Always respond with the following JSON format:
 {{
   ""oldPosition"": {
-    ""row"": current position from left to right (0-7),
-    ""column"": current position from top to bottom (0-7)
+    ""row"": current position from top to bottom (0-7),
+    ""column"": current position from left to right (0-7)
   },
   ""newPosition"": {
-    ""row"": new position from left to right (0-7),
-    ""column"": new position from top to bottom (0-7)
+    ""row"": new position from top to bottom (0-7),
+    ""column"": new position from left to right (0-7)
   },
 }}
 
