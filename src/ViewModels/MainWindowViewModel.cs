@@ -9,11 +9,13 @@ public class MainWindowViewModel : ViewModelBase
 {
     private ObservableCollection<Base> _pieces;
     private string _status;
+    private Team _currentTurn;
 
     public MainWindowViewModel()
     {
         _pieces = new ObservableCollection<Base>();
-        _status = "Game Ready";
+        _status = "White's Turn";
+        _currentTurn = Team.White;
 
         InitializeBoard();
     }
@@ -38,6 +40,12 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _status;
         set => this.RaiseAndSetIfChanged(ref _status, value);
+    }
+
+    public Team CurrentTurn
+    {
+        get => _currentTurn;
+        set => this.RaiseAndSetIfChanged(ref _currentTurn, value);
     }
 
     private void InitializeBoard()

@@ -211,6 +211,10 @@ public partial class MainWindow : Window
                     rect.Tag = piece;
                     piece.Position = clickedPos;
 
+                    // Update turn
+                    viewModel.CurrentTurn = viewModel.CurrentTurn == Team.White ? Team.Black : Team.White;
+                    viewModel.Status = viewModel.CurrentTurn == Team.White ? "White's Turn" : "Black's Turn";
+
                     selectedSquare = null;
                     DrawIcon(piece);
                     ResetSquareColors();
@@ -219,7 +223,8 @@ public partial class MainWindow : Window
             }
         }
 
-        if (GetPieceFromRectangle(rect) != null)
+        Base selected = GetPieceFromRectangle(rect);
+        if (selected != null && selected.Team == viewModel.CurrentTurn)
             selectedSquare = rect;
         else
             selectedSquare = null;
