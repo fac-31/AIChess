@@ -1,16 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
-using Avalonia.Input;
 using Avalonia.Media;
 using AvaloniaChessApp.ViewModels;
 using AvaloniaChessApp.Pieces;
-using AvaloniaChessApp;
-using System;
 using System.Collections.Generic;
-
-using AvaloniaChessApp.ViewModels;
-using Agent;
-using System.Threading.Tasks;
 
 namespace AvaloniaChessApp.Views;
 
@@ -68,6 +61,8 @@ public partial class MainWindow : Window
         var canvas = this.FindControl<Canvas>("ChessBoard");
         if (canvas == null) return;
 
+        // Draw squares first, then pieces on top
+
         for (int row = 0; row < App.BoardSize; row++)
         {
             for (int col = 0; col < App.BoardSize; col++)
@@ -106,7 +101,8 @@ public partial class MainWindow : Window
                         FontFamily = "Courier New",
                         TextAlignment = Avalonia.Media.TextAlignment.Center,
                         Foreground = new SolidColorBrush(Colors.Black),
-                        IsHitTestVisible = false // Prevent hover/click
+                        IsHitTestVisible = false, // Prevent hover/click
+                        ZIndex = 1
                     };
 
                     canvas.Children.Add(text);
